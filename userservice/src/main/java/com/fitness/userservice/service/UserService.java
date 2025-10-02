@@ -7,13 +7,15 @@ import com.fitness.userservice.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class UserService {
     @Autowired
     private UserRepository userRepository;
 
     public UserResponse register(RegisterRequest request) {
-        if(userRepository.existsByEmail(request.getEmail())){
+        if (userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("Email already exist");
         }
         User user = new User();
@@ -22,7 +24,7 @@ public class UserService {
         user.setFirstname(request.getFirstName());
         user.setLastName(request.getLastName());
 
-        User savedUser= userRepository.save(user);
+        User savedUser = userRepository.save(user);
         return UserResponse.builder().id(savedUser.getId())
                 .email(savedUser.getEmail())
                 .firstname(savedUser.getFirstname())
@@ -35,8 +37,8 @@ public class UserService {
     }
 
     public UserResponse getUserProfile(String userId) {
-       User user= userRepository.findById(userId).
-               orElseThrow(()->new RuntimeException("User not found"));
+        User user = userRepository.findById(userId).
+                orElseThrow(() -> new RuntimeException("User not found"));
 
         return UserResponse.builder().id(user.getId())
                 .email(user.getEmail())
@@ -46,5 +48,9 @@ public class UserService {
                 .createdAt(user.getCreatedAt())
                 .updatedAt(user.getUpdatedAt())
                 .build();
+    }
+
+    public Boolean existsById(String userId) {
+        return userRepository.existsById(userId);
     }
 }
