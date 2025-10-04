@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 public class UserResponse {
     private String id;
     private String email;
+    private String keycloakId;
     private String password;
     private String firstname;
     private String lastName;
