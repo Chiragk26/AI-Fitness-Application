@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class RecommendationService {
@@ -22,7 +23,15 @@ public class RecommendationService {
     }
 
     public Recommendation getActivityRecommendation(String activityId) {
-        return recommendationRepository.findByActivityId(activityId)
-                .orElseThrow(()->new RuntimeException("No RecommendationFound for this activity "+ activityId));
+        int retries = 5;
+        for (int i = 0; i < retries; i++) {
+            Optional<Recommendation> rec = recommendationRepository.findByActivityId(activityId);
+            if (rec.isPresent()) return rec.get();
+
+            try {
+                Thread.sleep(1000); // wait 1 sec
+            } catch (InterruptedException ignored) {}
+        }
+        throw new RuntimeException("No RecommendationFound for this activity " + activityId);
     }
 }
